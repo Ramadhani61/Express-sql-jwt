@@ -1,13 +1,6 @@
 .DS_Store
-Backend/node_modules
-frontend/node_modules
-dist
-coverage
-junit.xml
-dist.zip
-coverage
-tests/e2e/videos/
-tests/e2e/screenshots/
+node_modules
+/dist
 
 
 # local env files
