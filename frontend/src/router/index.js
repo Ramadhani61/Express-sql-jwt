@@ -1,27 +1,94 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import Vue from "vue";
+import VueRouter from "vue-router";
+import HomeView from "../views/HomeView.vue";
+import LoginView from "../views/LoginView.vue";
 
-Vue.use(VueRouter)
+Vue.use(VueRouter);
 
 const routes = [
   {
-    path: '/',
-    name: 'home',
-    component: HomeView
+    path: "/",
+    name: "home",
+    component: HomeView,
+    meta: {
+      requiresAuth: true,
+    },
   },
   {
-    path: '/about',
-    name: 'about',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
-  }
-]
+    path: "/login",
+    name: "Login",
+    component: LoginView,
+    meta: {
+      hideForAuth: true,
+      title: "Login",
+    },
+  },
+  {
+    path: "*",
+    redirect: "/",
+    meta: {
+      title: "404",
+    },
+  },
+];
 
 const router = new VueRouter({
-  routes
-})
+  mode: "history",
+  base: process.env.BASE_URL,
+  routes,
+  scrollBehavior(to, from, savedPosition) {
+    // Jika ada posisi yang tersimpan, kembalikan ke posisi tersebut
+    if (savedPosition) {
+      return savedPosition;
+    } else {
+      // Jika tidak ada posisi yang tersimpan, kembali ke atas halaman
+      return { x: 0, y: 0 };
+    }
+  },
+});
+router.beforeEach(async (to, from, next) => {
+  let session = !!sessionStorage.getItem("user_session");
 
-export default router
+  if (to.matched.some((record) => record.meta.requiresAdmin)) {
+    if (get_session().level == "1" || get_session().level == "0") {
+      next();
+    } else if (to.matched.some((record) => record.meta.requiresAnalyst)) {
+      if (get_session().level == "2") {
+        next();
+      } else {
+        next({ name: "Dashboard" });
+      }
+    } else {
+      next({ name: "Dashboard" });
+    }
+  }
+
+  if (to.matched.some((record) => record.meta.requiresAuth)) {
+    if (!session) {
+      next({ name: "Login" });
+    } else {
+      next();
+    }
+  }
+
+  if (to.matched.some((record) => record.meta.hideForAuth)) {
+    if (session) {
+      next({ name: "Dashboard" });
+    } else {
+      next();
+    }
+  }
+
+  next();
+});
+router.afterEach(async (to, from, next) => {
+  document.title = to.meta.title + " | " + "Pulse";
+  if (to.name !== "Login" && from.name !== "Login") {
+    if (get_session()) {
+      store.dispatch("auth/setLoading", true);
+      await store.dispatch("auth/tokenCheck");
+    }
+  }
+});
+
+export default router;

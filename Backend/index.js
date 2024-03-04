@@ -31,10 +31,16 @@ app.use(
 );
 app.use(
   cors({
-    credentials: true,
-    origin: "http://localhost:3000",
+    origin: false,
   })
 );
+
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "http://localhost:8080"); // Specify allowed origin
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE"); // Allowed methods
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization"); // Allowed headers
+  next();
+});
 
 app.use(express.json());
 app.use(userRoute);
