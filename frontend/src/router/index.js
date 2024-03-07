@@ -2,16 +2,25 @@ import Vue from "vue";
 import VueRouter from "vue-router";
 import HomeView from "../views/HomeView.vue";
 import LoginView from "../views/LoginView.vue";
-
+import Dashboards from "../views/home/Dashboard.vue";
 Vue.use(VueRouter);
 
 const routes = [
   {
     path: "/",
-    name: "home",
     component: HomeView,
+    children: [
+      {
+        path: "",
+        name: "Dashboard",
+        component: Dashboards,
+        meta: {
+          title: "Home",
+        },
+      },
+    ],
     meta: {
-      requiresAuth: true,
+      // requiresAuth: true,
     },
   },
   {
@@ -19,7 +28,7 @@ const routes = [
     name: "Login",
     component: LoginView,
     meta: {
-      hideForAuth: true,
+      // hideForAuth: true,
       title: "Login",
     },
   },
@@ -47,21 +56,21 @@ const router = new VueRouter({
   },
 });
 router.beforeEach(async (to, from, next) => {
-  let session = !!sessionStorage.getItem("user_session");
+  // let session = !!sessionStorage.getItem("user_session");
 
-  if (to.matched.some((record) => record.meta.requiresAdmin)) {
-    if (get_session().level == "1" || get_session().level == "0") {
-      next();
-    } else if (to.matched.some((record) => record.meta.requiresAnalyst)) {
-      if (get_session().level == "2") {
-        next();
-      } else {
-        next({ name: "Dashboard" });
-      }
-    } else {
-      next({ name: "Dashboard" });
-    }
-  }
+  // if (to.matched.some((record) => record.meta.requiresAdmin)) {
+  //   if (get_session().level == "1" || get_session().level == "0") {
+  //     next();
+  //   } else if (to.matched.some((record) => record.meta.requiresAnalyst)) {
+  //     if (get_session().level == "2") {
+  //       next();
+  //     } else {
+  //       next({ name: "Dashboard" });
+  //     }
+  //   } else {
+  //     next({ name: "Dashboard" });
+  //   }
+  // }
 
   if (to.matched.some((record) => record.meta.requiresAuth)) {
     if (!session) {
@@ -82,13 +91,13 @@ router.beforeEach(async (to, from, next) => {
   next();
 });
 router.afterEach(async (to, from, next) => {
-  document.title = to.meta.title + " | " + "Pulse";
-  if (to.name !== "Login" && from.name !== "Login") {
-    if (get_session()) {
-      store.dispatch("auth/setLoading", true);
-      await store.dispatch("auth/tokenCheck");
-    }
-  }
+  // document.title = to.meta.title + " | " + "Pulse";
+  // if (to.name !== "Login" && from.name !== "Login") {
+  //   if (get_session()) {
+  //     store.dispatch("auth/setLoading", true);
+  //     await store.dispatch("auth/tokenCheck");
+  //   }
+  // }
 });
 
 export default router;

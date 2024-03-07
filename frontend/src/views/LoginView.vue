@@ -11,7 +11,7 @@
       class="d-flex flex-column justify-center align-center gap-12 relative gradient-1"
     >
       <img
-        src="https://support.avi.id/images/logo_pt__angkasa_pura_aviasi1.png "
+        src="https://support.avi.id/images/logo_pt__angkasa_pura_aviasi1.png"
         alt="IMG"
         class="absolute"
         width="400"
@@ -132,8 +132,7 @@ export default {
       try {
         const res = await this.login(this.input);
         this.errorMessage = "";
-
-        //
+        this.$router.push({ name: "Dashboard" });
       } catch (error) {
         console.log(error);
         this.errorMessage = "Incorrect username or password.";

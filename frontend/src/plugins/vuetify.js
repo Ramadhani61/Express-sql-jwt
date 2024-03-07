@@ -1,11 +1,21 @@
 import Vue from "vue";
 import Vuetify from "vuetify/lib/framework";
 import "@mdi/font/css/materialdesignicons.css";
+import "@fontsource/work-sans";
 Vue.use(Vuetify);
 
+const requireComponent = require.context("@/assets/icons", false, /.+\.vue$/);
+const customIcons = {};
+requireComponent.keys().forEach((fileName) => {
+  const iconComponentConfig = requireComponent(fileName);
+  const iconName = fileName.replace(/^\.\/(.*)\.\w+$/, "$1");
+  customIcons[iconName] = {
+    component: iconComponentConfig.default || iconComponentConfig,
+  };
+});
 export default new Vuetify({
   icons: {
-    iconfont: "mdi", // default - only for display purposes
+    values: customIcons,
   },
   theme: {
     options: { customProperties: true },

@@ -1,17 +1,27 @@
 <template>
-  <v-app>
-    <v-app-bar app></v-app-bar>
-
-    <v-main>
-      <v-container> Hello World Home</v-container>
+  <div>
+    <Navbar />
+    <Appbar />
+    <v-main class="background main">
+      <v-container class="" fluid>
+        <router-view />
+      </v-container>
     </v-main>
-  </v-app>
+  </div>
 </template>
 
 <script>
+import Appbar from "@/components/base/Appbar.vue";
+import Navbar from "@/components/base/Navbar.vue";
+
 export default {
   name: "HomeView",
 
-  components: {},
+  components: { Navbar, Appbar },
 };
 </script>
+<style scoped>
+.main {
+  min-height: 88svh;
+}
+</style>
